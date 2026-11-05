@@ -1,0 +1,11 @@
+{
+  "version": 3,
+  "build": {
+    "command": "pip install -r requirements.txt"
+  },
+  "installCommand": "pip install -r requirements.txt",
+  "framework": null,
+  "runtime": "python3.11",
+  "wildcard": "/api/*",
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+}

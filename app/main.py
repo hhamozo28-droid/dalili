@@ -38,10 +38,16 @@ def _seed_passcodes():
     """إنشاء رموز دخول أولية عند التشغيل"""
     db = SessionLocal()
     if db.query(Passcode).count() == 0:
-        for _ in range(3):
-            db.add(Passcode(code=secrets.token_urlsafe(6)))
+        # إذا كان هناك INITIAL_PASSCODE مضبوط، استخدمه
+        initial = os.environ.get("INITIAL_PASSCODE", "")
+        if initial:
+            db.add(Passcode(code=initial.strip()))
+            print(f"🔑 رمز الدخول الأولي: {initial.strip()}")
+        else:
+            for _ in range(3):
+                db.add(Passcode(code=secrets.token_urlsafe(6)))
         db.commit()
-        print("🔑 رموز دخول أولية تم إنشاؤها (اطلبها من ملف data/passcodes.txt أو من اللوحة)")
+        print("🔑 رموز دخول أولية تم إنشاؤها — اطلبها من Vercel logs أو من صفحة /passcodes")
     db.close()
 
 
