@@ -11,11 +11,12 @@ import re
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-3.8-flash"
 
 
 def _call_gemini(prompt: str, temperature: float = 0.7, max_tokens: int = 8000) -> str:
-    """استدعاء Gemini API"""
+    """استدعاء Gemini API مع إعادة محاولة لـ 503"""
+    import time
     headers = {
         "Authorization": f"Bearer {GEMINI_API_KEY}",
         "Content-Type": "application/json",
@@ -26,11 +27,31 @@ def _call_gemini(prompt: str, temperature: float = 0.7, max_tokens: int = 8000) 
         "temperature": temperature,
         "max_tokens": max_tokens,
     }
-    response = requests.post(GEMINI_URL, headers=headers, json=data, timeout=120)
-    if response.status_code != 200:
-        raise Exception(f"Gemini API error: {response.status_code} — {response.text[:300]}")
-    result = response.json()
-    return result["choices"][0]["message"]["content"].strip()
+    for attempt in range(5):
+        try:
+            response = requests.post(GEMINI_URL, headers=headers, json=data, timeout=120)
+            if response.status_code == 503:
+                if attempt < 4:
+                    time.sleep(3 * (attempt + 1))
+                    continue
+                raise Exception(f"Gemini API 503 — النموذج تحت ضغط طلب عالٍ")
+            if response.status_code != 200:
+                raise Exception(f"Gemini API error: {response.status_code} — {response.text[:300]}")
+            result = response.json()
+            if isinstance(result, list):
+                raise Exception(f"Gemini API returned list: {result[:200]}")
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"].strip()
+            elif "candidates" in result:
+                parts = result["candidates"][0].get("content", {}).get("parts", [])
+                return parts[0].get("text", "").strip() if parts else ""
+            raise Exception(f"Gemini API unexpected response: {str(result)[:200]}")
+        except requests.exceptions.ReadTimeout:
+            if attempt < 4:
+                time.sleep(3 * (attempt + 1))
+                continue
+            raise Exception("Gemini API timeout")
+    raise Exception("Gemini API exhausted retries")
 
 
 def _extract_title(text: str) -> str:
