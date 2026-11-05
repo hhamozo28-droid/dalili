@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}اللوحة{% endblock %}
+{% block content %}
+<div class="dashboard-head">
+    <h1 class="page-title">⚙️ لوحة الأساتذة</h1>
+    <p class="page-desc">أنشئ أدلة ودروس التكوين المهني — الذكاء الاصطناعي يولد المحتوى</p>
+</div>
+
+<!-- رسائل نجاح/خطأ -->
+{% if request.query_params.get("ok") == "generated" %}
+<div class="alert success">✅ تم توليد {% if request.query_params.get("type") == "guide" %}دليل{% else %}درس{% endif %} جديد: «{{ request.query_params.get("title") }}»</div>
+{% endif %}
+{% if request.query_params.get("err") == "missing" %}
+<div class="alert error">⚠️ الرجاء إدخال التخصص والمادة</div>
+{% endif %}
+{% if request.query_params.get("newcode") %}
+<div class="alert success">🔑 رمز دخول جديد: <b>{{ request.query_params.get("newcode") }}</b></div>
+{% endif %}
+
+<!-- نموذج التوليد -->
+<div class="section">
+    <h2 class="section-title">⚡ توليد المحتوى</h2>
+    <form method="POST" action="/generate" class="gen-form">
+        <div class="gen-row">
+            <div class="field">
+                <label>النوع</label>
+                <select name="kind" required>
+                    <option value="guide">📘 دليل المتربص</option>
+                    <option value="lesson">🎥 درس التكوين المهني</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>التخصص *</label>
+                <input type="text" name="specialization" placeholder="مثال: الإلكتروني" required>
+            </div>
+            <div class="field">
+                <label>المادة *</label>
+                <input type="text" name="subject_name" placeholder="مثال: الأساسيات الإلكترونية" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-accent btn-block">✨ توليد المحتوى</button>
+    </form>
+</div>
+
+<!-- مجلد الدليلي -->
+<div class="section">
+    <h2 class="section-title">📁 مجلد الدليلي ({{ guides|length }})</h2>
+    {% if guides %}
+    <div class="content-grid">
+        {% for guide in guides %}
+        <a href="/view/guide/{{ guide.id }}" class="card content-card">
+            <div class="card-icon">📘</div>
+            <div class="card-body">
+                <h3 class="card-title">{{ guide.title }}</h3>
+                <p class="card-meta">{{ guide.subject.name }} · {{ guide.subject.specialization.name }}</p>
+            </div>
+            <span class="list-arrow">→</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">لا توجد أدلة بعد. استخدم النموذج أعلاه لتوليد أول دليل.</div>
+    {% endif %}
+</div>
+
+<!-- مجلد دروسي -->
+<div class="section">
+    <h2 class="section-title">📂 مجلد دروسي ({{ lessons|length }})</h2>
+    {% if lessons %}
+    <div class="content-grid">
+        {% for lesson in lessons %}
+        <a href="/view/lesson/{{ lesson.id }}" class="card content-card">
+            <div class="card-icon">🎥</div>
+            <div class="card-body">
+                <h3 class="card-title">{{ lesson.title }}</h3>
+                <p class="card-meta">{{ lesson.subject.name }} · {{ lesson.subject.specialization.name }}</p>
+            </div>
+            <span class="list-arrow">→</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">لا توجد دروس بعد. استخدم النموذج أعلاه لتوليد أول درس.</div>
+    {% endif %}
+</div>
+
+<!-- رموز الدخول -->
+<div class="section">
+    <div class="passcode-box">
+        <h3>🔑 رموز الدخول</h3>
+        <p class="muted">أنشئ رموز دخول جديدة للأساتذة الآخرين. كل رمز يُستخدم مرة واحدة.</p>
+        <form method="POST" action="/passcode/new" style="display:inline">
+            <button type="submit" class="btn btn-ghost">+ إنشاء رمز دخول</button>
+        </form>
+        <a href="/passcodes" class="btn btn-small btn-ghost">عرض الرموز</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ subject.name }} — الإدارة{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/admin">الإدارة</a>
+    <span class="sep">/</span>
+    <a href="/admin/specialization/{{ spec.slug }}">{{ spec.name }}</a>
+    <span class="sep">/</span>
+    <span>{{ subject.name }}</span>
+</div>
+
+<div class="page-head">
+    <div class="page-icon">{{ subject.icon }}</div>
+    <div>
+        <h1 class="page-title">{{ subject.name }}</h1>
+        <p class="page-desc">{{ subject.description }}</p>
+        <span class="spec-tag">{{ spec.icon }} {{ spec.name }}</span>
+    </div>
+</div>
+
+{% if success %}<div class="alert success">{{ success }}</div>{% endif %}
+{% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+
+<!-- أزرار توليد المحتوى -->
+<div class="section">
+    <div class="gen-box">
+        <h2 class="section-title">⚡ توليد المحتوى</h2>
+        <p class="gen-note">الأستاذ يُدخل التخصص والمادة فقط — النظام يُولّد المحتوى تلقائياً.</p>
+        <div class="gen-buttons">
+            <form method="POST" action="/admin/subject/{{ subject.slug }}/generate/guide" style="display:inline">
+                <button type="submit" class="btn btn-accent">📘 توليد دليل متربص جديد</button>
+            </form>
+            <form method="POST" action="/admin/subject/{{ subject.slug }}/generate/lesson" style="display:inline">
+                <button type="submit" class="btn btn-accent">🎥 توليد درس جديد</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- قسم الأدلة -->
+<div class="section">
+    <h2 class="section-title">📚 الأدلة ({{ guides|length }})</h2>
+    {% if guides %}
+    <div class="list">
+        {% for guide in guides %}
+        <div class="list-item static">
+            <span class="list-icon">📘</span>
+            <div class="list-body">
+                <h3 class="list-title">{{ guide.title }}</h3>
+            </div>
+            <a href="/guide/{{ guide.id }}" class="btn btn-small">عرض</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">لا توجد أدلة. اضغط على «توليد دليل» أعلاه.</div>
+    {% endif %}
+</div>
+
+<!-- قسم الدروس -->
+<div class="section">
+    <h2 class="section-title">🎥 الدروس ({{ lessons|length }})</h2>
+    {% if lessons %}
+    <div class="list">
+        {% for lesson in lessons %}
+        <div class="list-item static">
+            <span class="list-icon">▶️</span>
+            <div class="list-body">
+                <h3 class="list-title">{{ lesson.title }}</h3>
+            </div>
+            <a href="/lesson/{{ lesson.id }}" class="btn btn-small">عرض</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">لا توجد دروس. اضغط على «توليد درس» أعلاه.</div>
+    {% endif %}
+</div>
+
+<!-- رابط لعرض صفحة المادة كطالب -->
+<div style="text-align:center; margin: 30px 0">
+    <a href="/subject/{{ subject.slug }}" class="btn btn-ghost">👁️ عرض كطالب</a>
+</div>
+{% endblock %}

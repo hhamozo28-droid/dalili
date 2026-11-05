@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}تخصص جديد{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/admin">الإدارة</a>
+    <span class="sep">/</span>
+    <span>تخصص جديد</span>
+</div>
+
+<div class="admin-head">
+    <h1 class="page-title">تخصص جديد</h1>
+</div>
+
+{% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+
+<form method="POST" action="/admin/specialization/new" class="form-card">
+    <div class="field">
+        <label>اسم التخصص *</label>
+        <input type="text" name="name" placeholder="مثال: الإلكتروني" required>
+    </div>
+    <div class="field">
+        <label>وصف مختصر</label>
+        <textarea name="description" placeholder="وصف مختصر للتخصص"></textarea>
+    </div>
+    <div class="field">
+        <label>رمز تعريفي (emoji)</label>
+        <input type="text" name="icon" placeholder="📘" value="📘" maxlength="4">
+    </div>
+    <button type="submit" class="btn">إنشاء التخصص</button>
+</form>
+{% endblock %}

@@ -1,0 +1,457 @@
+/* ===== دالي دالي — التكوين المهني ===== */
+:root {
+    --primary: #1e40af;
+    --primary-light: #3b82f6;
+    --primary-dark: #1e3a8a;
+    --accent: #f59e0b;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.06);
+    --shadow-hover: 0 8px 30px rgba(30,64,175,0.12);
+    --max: 1100px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: "Segoe UI", "Tajawal", "Cairo", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container { max-width: var(--max); margin: 0 auto; padding: 0 20px; width: 100%; }
+
+/* ===== الـ Header ===== */
+.header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    gap: 20px;
+}
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); }
+.logo-icon { font-size: 26px; }
+.logo-text { font-size: 22px; font-weight: 800; color: var(--primary); }
+.nav { display: flex; gap: 6px; }
+.nav-link {
+    text-decoration: none;
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all .2s;
+}
+.nav-link:hover, .nav-link.active { color: var(--primary); background: #eff6ff; }
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text);
+}
+
+/* ===== Hero ===== */
+.hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+    border-radius: 24px;
+    color: white;
+    margin-bottom: 40px;
+}
+.hero-title { font-size: 42px; font-weight: 800; letter-spacing: -1px; }
+.hero-subtitle { font-size: 20px; margin-top: 8px; opacity: .95; }
+.hero-desc { font-size: 15px; margin-top: 6px; opacity: .8; }
+
+/* ===== Sections ===== */
+.section { margin-bottom: 40px; }
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ===== Grid ===== */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+.card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all .25s;
+    border: 1px solid transparent;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary-light);
+}
+.card-icon {
+    font-size: 36px;
+    width: 60px; height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    background: #eff6ff;
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+.card-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.card-desc { font-size: 13px; color: var(--muted); }
+
+/* ===== Breadcrumb ===== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: var(--muted);
+}
+.breadcrumb a { color: var(--primary); text-decoration: none; font-weight: 600; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb .sep { opacity: .5; }
+
+/* ===== Page Head ===== */
+.page-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+.page-icon {
+    font-size: 40px;
+    width: 70px; height: 70px;
+    display: flex; align-items: center; justify-content: center;
+    background: #eff6ff;
+    border-radius: 18px;
+    flex-shrink: 0;
+}
+.page-title { font-size: 26px; font-weight: 800; }
+.page-desc { color: var(--muted); font-size: 15px; margin-top: 2px; }
+
+/* ===== List ===== */
+.list { display: flex; flex-direction: column; gap: 10px; }
+.list-item {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    transition: all .2s;
+    border: 1px solid transparent;
+}
+.list-item:hover { border-color: var(--primary-light); transform: translateX(4px); }
+.list-icon { font-size: 22px; }
+.list-body { flex: 1; }
+.list-title { font-size: 16px; font-weight: 600; }
+.list-arrow { color: var(--muted); font-size: 18px; }
+
+/* ===== Content / Article ===== */
+.content {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow);
+}
+.content-head { margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 16px; }
+.content-tag {
+    display: inline-block;
+    background: #eff6ff;
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.content-title { font-size: 28px; font-weight: 800; }
+.prose { font-size: 16px; line-height: 1.9; }
+.prose h2 { font-size: 22px; margin: 24px 0 10px; }
+.prose p { margin-bottom: 12px; }
+.prose ul, .prose ol { margin: 10px 0 12px 20px; }
+.prose li { margin-bottom: 6px; }
+
+/* ===== Empty / Error ===== */
+.empty {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    box-shadow: var(--shadow);
+}
+.error-page { text-align: center; padding: 80px 20px; }
+.error-icon { font-size: 60px; }
+.error-page h1 { font-size: 48px; font-weight: 800; color: var(--primary); margin: 10px 0; }
+
+/* ===== Buttons ===== */
+.btn {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 12px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    margin-top: 16px;
+    transition: background .2s;
+}
+.btn:hover { background: var(--primary-dark); }
+
+/* ===== Footer ===== */
+.footer {
+    margin-top: auto;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* ===== محتوى تعليمي أنيق ===== */
+.muted { color: var(--muted); }
+
+/* ===== عناصر الإدارة ===== */
+.admin-head { margin-bottom: 30px; }
+.admin-actions { margin-bottom: 30px; }
+
+.alert {
+    padding: 14px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 15px;
+}
+.alert.success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.alert.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+/* ===== النماذج ===== */
+.form-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    max-width: 600px;
+}
+.field { margin-bottom: 20px; }
+.field label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+.field input, .field textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: border .2s;
+    background: #fff;
+    color: var(--text);
+}
+.field input:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--primary-light);
+}
+.field textarea { resize: vertical; min-height: 80px; }
+
+/* ===== أزرار خاصة ===== */
+.btn-accent { background: var(--accent); }
+.btn-accent:hover { background: #d97706; }
+.btn-ghost {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+.btn-ghost:hover { background: #eff6ff; }
+.btn-small {
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+/* ===== صندوق التوليد ===== */
+.gen-box {
+    background: linear-gradient(135deg, #fff7ed, #fef3c7);
+    border: 2px dashed var(--accent);
+    border-radius: var(--radius);
+    padding: 28px;
+}
+.gen-note { color: var(--muted); margin-bottom: 16px; font-size: 14px; }
+.gen-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ===== عناصر قائمة ثابتة ===== */
+.list-item.static { pointer-events: auto; }
+.list-item.static .btn { pointer-events: auto; }
+
+.spec-tag {
+    display: inline-block;
+    background: #eff6ff;
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+/* ===== صفحة الدخول ===== */
+.login-wrap {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+.login-card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 48px 40px;
+    box-shadow: var(--shadow-hover);
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+}
+.login-icon { font-size: 52px; }
+.login-title { font-size: 32px; font-weight: 800; color: var(--primary); margin-top: 8px; }
+.login-subtitle { color: var(--muted); margin: 6px 0 28px; font-size: 15px; }
+.login-form { text-align: right; }
+.login-note { color: var(--muted); font-size: 13px; margin-top: 16px; }
+
+/* ===== عناصر الـ Dashboard ===== */
+.dashboard-head { margin-bottom: 30px; }
+
+.gen-form {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+}
+.gen-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.gen-form select, .gen-form input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+}
+.gen-form select:focus, .gen-form input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+}
+.btn-block { display: block; width: 100%; }
+
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+}
+.content-card { align-items: flex-start; }
+.card-meta { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.passcode-box {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-radius: var(--radius);
+    padding: 24px;
+}
+.passcode-box h3 { margin-bottom: 8px; }
+
+/* ===== صفحة الرموز ===== */
+.code-display {
+    font-family: "Courier New", monospace;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 2px;
+}
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.badge.unused { background: #dcfce7; color: #15803d; }
+
+/* ===== تصحيح الرؤوس ===== */
+.logout-link { color: var(--muted); }
+
+/* ===== Tablet ===== */
+@media (max-width: 768px) {
+    .gen-row { grid-template-columns: 1fr; }
+    .login-card { padding: 36px 24px; }
+}
+
+/* ===== Tablet ===== */
+@media (max-width: 768px) {
+    .hero { padding: 40px 18px 30px; }
+    .hero-title { font-size: 30px; }
+    .hero-subtitle { font-size: 16px; }
+    .page-title { font-size: 22px; }
+    .content { padding: 20px; }
+    .content-title { font-size: 22px; }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 600px) {
+    .menu-toggle { display: block; }
+    .nav {
+        display: none;
+        position: absolute;
+        top: 100%; right: 0; left: 0;
+        background: var(--card);
+        flex-direction: column;
+        padding: 10px;
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+    .nav.open { display: flex; }
+    .grid { grid-template-columns: 1fr; }
+    .page-head { flex-direction: column; align-items: flex-start; }
+    .page-icon { width: 56px; height: 56px; font-size: 32px; }
+    .hero-title { font-size: 26px; }
+}

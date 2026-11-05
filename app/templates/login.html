@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}دخول{% endblock %}
+{% block content %}
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="login-icon">🔐</div>
+        <h1 class="login-title">dalili</h1>
+        <p class="login-subtitle">لوحة الأساتذة — التكوين المهني</p>
+
+        {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+
+        <form method="POST" action="/login" class="login-form">
+            <div class="field">
+                <label>رمز الدخول</label>
+                <input type="text" name="code" placeholder="أدخل رمز الدخول" autofocus required>
+            </div>
+            <button type="submit" class="btn btn-block">دخول</button>
+        </form>
+        <p class="login-note">رمز الدخول يُستخدم مرة واحدة فقط</p>
+    </div>
+</div>
+{% endblock %}
