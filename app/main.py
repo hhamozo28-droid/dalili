@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 import os
 
 from .database import SessionLocal, run_migrations
-from .models import Specialization, Subject, Guide, Lesson, Passcode, init_db, get_db
+from .models import Specialization, Subject, Guide, Lesson, Passcode, ExtractedProgram, init_db, get_db
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
@@ -345,3 +345,187 @@ def delete_confirm(request: Request, kind: str, id: int, db: Session = Depends(g
     return templates.TemplateResponse(request, "delete_confirm.html", {
         "db": db, "kind": kind, "item": item, "label": label, "active": "dashboard",
     })
+
+
+# ===== توليد الدليل من ملف البرنامج (3 مراحل) =====
+
+@app.post("/generate/upload-file")
+async def generate_upload_file(request: Request, db: Session = Depends(get_db)):
+    """رفع ملف برنامج التخصص — المرحلة 1"""
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+
+    form = await request.form()
+    upload = form.get("file")
+    if not upload or not hasattr(upload, "read"):
+        return RedirectResponse("/dashboard?err=nofile", status_code=302)
+
+    filename = getattr(upload, "filename", "unknown")
+    file_bytes = await upload.read()
+
+    if len(file_bytes) > 10 * 1024 * 1024:  # 10MB max
+        return RedirectResponse("/dashboard?err=toolarge", status_code=302)
+
+    # تحليل الملف
+    try:
+        from .file_parser import parse_uploaded_file
+        text = parse_uploaded_file(file_bytes, filename)
+    except Exception as e:
+        return RedirectResponse(f"/dashboard?err=parse:{str(e)[:50]}", status_code=302)
+
+    # استخراج التخصص والمواد بالذكاء الاصطناعي
+    try:
+        from .ai_api import extract_specialization_and_subjects
+        result = extract_specialization_and_subjects(text)
+    except Exception as e:
+        # محاولة الاستخراج بالـ regex ك fallback
+        result = _extract_with_regex(text)
+
+    if not result or not result.get("subjects"):
+        return RedirectResponse("/dashboard?err=noextract", status_code=302)
+
+    # حفظ نتيجة الاستخراج
+    import json
+    ep = ExtractedProgram(
+        specialization=result.get("specialization", "غير معروف"),
+        subjects_json=json.dumps(result.get("subjects", []), ensure_ascii=False),
+        source_filename=filename,
+        used=False,
+    )
+    db.add(ep)
+    db.commit()
+    db.refresh(ep)
+
+    # تخزين معرف الاستخراج في الجلسة
+    request.session["extracted_id"] = ep.id
+
+    return RedirectResponse(f"/generate/confirm/{ep.id}", status_code=302)
+
+
+def _extract_with_regex(text: str) -> dict:
+    """استخراج التخصص والمواد بالـ regex (بدون ذكاء اصطناعي)"""
+    import re
+    subjects = []
+
+    # البحث عن مواد MQ و MC
+    for match in re.finditer(r'(MQ|MC)\s*[:\-–]\s*(.+)', text, re.IGNORECASE):
+        code = match.group(1).upper()
+        name = match.group(2).strip().split("\n")[0][:100]
+        if name and len(name) > 2:
+            subjects.append({
+                "code": f"{code}1",
+                "name": name,
+                "original_name": name,
+            })
+
+    # البحث عن التخصص (أنماط شائعة)
+    spec_match = re.search(r'([^\n]{0,50}?(?:MME|MMP|MMC|MMG|MMA|MMH|MMI|MMJ|MMK|MML|MMM)[^\n]{0,50})', text, re.IGNORECASE)
+    specialization = spec_match.group(1).strip() if spec_match else "غير معروف"
+
+    return {"specialization": specialization, "subjects": subjects}
+
+
+@app.get("/generate/confirm/{ep_id}", response_class="HTML")
+def generate_confirm_form(request: Request, ep_id: int, db: Session = Depends(get_db)):
+    """المرحلة 1: صفحة تأكيد التخصص المستخرج"""
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+
+    ep = db.query(ExtractedProgram).filter(ExtractedProgram.id == ep_id).first()
+    if not ep:
+        return templates.TemplateResponse(request, "error.html", {"message": "البرنامج غير موجود"}, status_code=404)
+
+    import json
+    subjects = json.loads(ep.subjects_json)
+
+    return templates.TemplateResponse(request, "confirm_specialization.html", {
+        "db": db, "ep": ep, "subjects": subjects, "active": "dashboard",
+    })
+
+
+@app.post("/generate/confirm/{ep_id}")
+def generate_confirm(request: Request, ep_id: int):
+    """المرحلة 1: تأكيد التخصص والتوجه لاختيار المادة"""
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+
+    form = request.form if hasattr(request, "form") else {}
+    action = form.get("action", "confirm")
+
+    if action == "confirm":
+        return RedirectResponse(f"/generate/subject/{ep_id}", status_code=302)
+    elif action == "reupload":
+        request.session.pop("extracted_id", None)
+        return RedirectResponse("/dashboard", status_code=302)
+
+    return RedirectResponse(f"/generate/confirm/{ep_id}", status_code=302)
+
+
+@app.get("/generate/subject/{ep_id}", response_class="HTML")
+def generate_subject_form(request: Request, ep_id: int, db: Session = Depends(get_db)):
+    """المرحلة 2: اختيار المادة من القائمة"""
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+
+    ep = db.query(ExtractedProgram).filter(ExtractedProgram.id == ep_id).first()
+    if not ep:
+        return templates.TemplateResponse(request, "error.html", {"message": "البرنامج غير موجود"}, status_code=404)
+
+    import json
+    subjects = json.loads(ep.subjects_json)
+
+    return templates.TemplateResponse(request, "select_subject.html", {
+        "db": db, "ep": ep, "subjects": subjects, "active": "dashboard",
+    })
+
+
+@app.post("/generate/subject/{ep_id}")
+def generate_subject(request: Request, ep_id: int, db: Session = Depends(get_db)):
+    """المرحلة 2: توليد الدليل بناءً على المادة المختارة"""
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+
+    ep = db.query(ExtractedProgram).filter(ExtractedProgram.id == ep_id).first()
+    if not ep:
+        return templates.TemplateResponse(request, "error.html", {"message": "البرنامج غير موجود"}, status_code=404)
+
+    import json
+    subjects = json.loads(ep.subjects_json)
+    subject_code = request.form.get("subject_code", "")
+    subject_name = ""
+    for s in subjects:
+        if s["code"] == subject_code:
+            subject_name = s["name"]
+            break
+
+    if not subject_name:
+        return RedirectResponse(f"/generate/subject/{ep_id}?err=nosubject", status_code=302)
+
+    # توليد الدليل بالذكاء الاصطناعي
+    from .ai_generator import generate_guide
+    spec_name = ep.specialization
+    title, content = generate_guide(spec_name, subject_name)
+
+    # إنشاء المادة إذا لم تكن موجودة
+    subj_slug = subject_name.lower().replace(" ", "-")[:80]
+    subject = db.query(Subject).filter(Subject.slug == subj_slug).first()
+    if not subject:
+        # إنشاء تخصص إذا لم يكن موجوداً
+        spec_slug = spec_name.lower().replace(" ", "-")[:80]
+        spec = db.query(Specialization).filter(Specialization.slug == spec_slug).first()
+        if not spec:
+            spec = Specialization(name=spec_name, slug=spec_slug, description="", icon="📘")
+            db.add(spec)
+            db.flush()
+        subject = Subject(specialization_id=spec.id, name=subject_name, slug=subj_slug, description="", icon="📚")
+        db.add(subject)
+        db.flush()
+
+    guide = Guide(subject_id=subject.id, title=title, content=content)
+    db.add(guide)
+
+    # حفظ البرنامج كمستخدم
+    ep.used = True
+    db.commit()
+
+    return RedirectResponse(f"/view/guide/{guide.id}", status_code=302)

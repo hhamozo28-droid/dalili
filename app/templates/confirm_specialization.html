@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}تأكيد التخصص{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/dashboard">اللوحة</a>
+    <span class="sep">/</span>
+    <span>توليد دليل — تأكيد التخصص</span>
+</div>
+
+<div class="dashboard-head">
+    <h1 class="page-title">📌 المرحلة 1: تأكيد التخصص</h1>
+    <p class="page-desc">تم استخراج التخصص من البرنامج المرفوع «{{ ep.source_filename }}»</p>
+</div>
+
+<div class="section">
+    <div class="spec-confirm-box">
+        <div class="spec-confirm-icon">📋</div>
+        <h2 class="spec-confirm-title">هل تقصد هذا التخصص؟</h2>
+        <p class="spec-confirm-name">{{ ep.specialization }}</p>
+        {% if subjects|length > 0 %}
+        <p class="muted" style="margin-top: 10px">تم استخراج {{ subjects|length }} مادة من البرنامج</p>
+        {% else %}
+        <div class="alert error" style="margin-top: 12px">⚠️ لم يتم استخراج مواد من البرنامج. قد تحتاج إلى رفع ملف آخر.</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="section" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center">
+    <form method="POST" action="/generate/confirm/{{ ep.id }}" style="display:inline">
+        <input type="hidden" name="action" value="confirm">
+        <button type="submit" class="btn btn-accent" {% if subjects|length == 0 %}disabled{% endif %}>
+            ✅ نعم، هذا هو التخصص
+        </button>
+    </form>
+    <form method="POST" action="/generate/confirm/{{ ep.id }}" style="display:inline">
+        <input type="hidden" name="action" value="reupload">
+        <button type="submit" class="btn btn-ghost">📤 رفع ملف آخر</button>
+    </form>
+</div>
+{% endblock %}

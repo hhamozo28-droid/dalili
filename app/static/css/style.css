@@ -515,12 +515,52 @@ body {
 .stat-number { font-size: 28px; font-weight: 800; color: var(--primary); }
 .stat-label { font-size: 14px; color: var(--muted); }
 
+/* ===== صندوق تأكيد التخصص ===== */
+.spec-confirm-box {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 36px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.spec-confirm-icon { font-size: 52px; }
+.spec-confirm-title { font-size: 22px; font-weight: 700; margin: 12px 0 8px; }
+.spec-confirm-name {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    background: #eff6ff;
+    padding: 16px 20px;
+    border-radius: 12px;
+    line-height: 1.6;
+}
+
+/* ===== رفع الملف ===== */
+.upload-area {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    border: 2px dashed var(--border);
+    transition: border-color .2s;
+    cursor: pointer;
+}
+.upload-area:hover { border-color: var(--primary-light); }
+.upload-icon { font-size: 48px; }
+.upload-title { font-size: 18px; font-weight: 700; margin: 12px 0 6px; }
+.upload-desc { color: var(--muted); font-size: 14px; }
+.upload-formats { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
 /* ===== Tablet ===== */
 @media (max-width: 768px) {
     .gen-row { grid-template-columns: 1fr; }
     .login-card { padding: 36px 24px; }
     .stats-bar { grid-template-columns: 1fr; }
     .stat-card { justify-content: flex-start; }
+    .spec-confirm-box { padding: 24px; }
 }
 
 /* ===== Tablet ===== */

@@ -80,6 +80,18 @@ class Passcode(Base):
     is_master = Column(Boolean, default=False)  # 👑 رمز رئيسي دائم
 
 
+class ExtractedProgram(Base):
+    """برنامج مستخرج من ملف تم رفعه — للدليل"""
+    __tablename__ = "extracted_programs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    specialization = Column(Text, nullable=False)       # اسم التخصص الكامل
+    subjects_json = Column(Text, nullable=False)         # قائمة المواد (JSON)
+    source_filename = Column(String(200), default="")   # اسم الملف المرفوع
+    used = Column(Boolean, default=False)               # هل تم استخدامه للتوليد
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 def init_db():
     """إنشاء الجداول في قاعدة البيانات"""
     Base.metadata.create_all(bind=engine)

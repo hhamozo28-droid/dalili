@@ -16,4 +16,22 @@ document.addEventListener("DOMContentLoaded", function () {
             nav.classList.remove("open");
         });
     });
+
+    // عرض اسم الملف عند الرفع
+    var fileInput = document.getElementById("file-input");
+    var fileName = document.getElementById("file-name");
+    var submitBtn = document.getElementById("submit-btn");
+    if (fileInput) {
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length > 0) {
+                var f = fileInput.files[0];
+                var sizeKB = Math.round(f.size / 1024);
+                fileName.textContent = "✅ " + f.name + " (" + sizeKB + " KB)";
+                submitBtn.style.display = "block";
+            } else {
+                fileName.textContent = "";
+                submitBtn.style.display = "none";
+            }
+        });
+    }
 });

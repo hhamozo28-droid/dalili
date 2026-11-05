@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}اختيار المادة{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/dashboard">اللوحة</a>
+    <span class="sep">/</span>
+    <a href="/generate/confirm/{{ ep.id }}">تأكيد التخصص</a>
+    <span class="sep">/</span>
+    <span>اختيار المادة</span>
+</div>
+
+<div class="dashboard-head">
+    <h1 class="page-title">📌 المرحلة 2: اختيار المادة</h1>
+    <p class="page-desc">{{ ep.specialization }}</p>
+</div>
+
+{% if request.query_params.get("err") == "nosubject" %}
+<div class="alert error">⚠️ الرجاء اختيار مادة من القائمة</div>
+{% endif %}
+
+<div class="section">
+    <form method="POST" action="/generate/subject/{{ ep.id }}" class="gen-form">
+        <div class="field">
+            <label>اختر المادة (MQ أو MC)</label>
+            <select name="subject_code" required>
+                <option value="">— اختر المادة —</option>
+                {% for s in subjects %}
+                <option value="{{ s.code }}">
+                    {{ s.code }} — {{ s.name }}
+                    {% if s.original_name and s.original_name != s.name %}
+                    ({{ s.original_name }})
+                    {% endif %}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-accent btn-block">✨ توليد الدليل</button>
+    </form>
+</div>
+
+<div class="section" style="text-align:center">
+    <a href="/generate/confirm/{{ ep.id }}" class="btn btn-ghost">← رجوع</a>
+</div>
+{% endblock %}

@@ -101,6 +101,54 @@ def generate_with_gemini(spec: str, subject: str, kind: str = "guide"):
     return title, content
 
 
+def extract_specialization_and_subjects(text: str):
+    """
+    استخراج التخصص والمواد من نص برنامج التكوين المهني
+    يُرجع (specialization: str, subjects: list of dict)
+    """
+    prompt = f"""أنت مساعد متخصص في برامج التكوين المهني الجزائرية.
+
+قم بتحليل النص المستخرج من برنامج تكوين مهني واستخراج:
+
+1. اسم التخصص بالصيغة الكاملة (مثال: "ميكانيك إصلاح المركبات الخفيفة • 0709MME • شهادة الكفاءة المهنية")
+2. جميع المواد مع رموزها وأسماءها:
+   - MQ = Module Qualifiant (الوحدة المهنية التخصصية)
+   - MC = Module Commun (الوحدة المشتركة)
+   - قم بترجمة أسماء المواد إلى العربية إذا كانت بالفرنسية
+
+أرجع النتيجة كصيغة JSON فقط (بدون أي نص آخر):
+
+{{
+    "specialization": "التخصص الكامل بالصيغة المذكورة",
+    "subjects": [
+        {{"code": "MQ1", "name": "الاسم بالعربية", "original_name": "nom original"}},
+        {{"code": "MC1", "name": "الاسم بالعربية", "original_name": "nom original"}},
+        ...
+    ]
+}}
+
+إذا لم تجد التخصص، ضع "غير معروف".
+إذا لم تجد المواد، ضع قائمة فارغة.
+
+---
+نص البرنامج:
+{text[:8000]}"""
+
+    result = _call_gemini(prompt, temperature=0.3)
+    import json
+    import re
+    # استخراج JSON من النص
+    json_match = re.search(r'\{.*\}', result, re.DOTALL)
+    if json_match:
+        try:
+            return json.loads(json_match.group())
+        except json.JSONDecodeError:
+            pass
+
+    # نتيجة فارغة إذا فشل التحليل
+    return {"specialization": "غير معروف", "subjects": []}
+
+
 def is_available() -> bool:
     """هل API Key مضبوط؟"""
     return bool(GEMINI_API_KEY)

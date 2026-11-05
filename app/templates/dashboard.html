@@ -44,6 +44,37 @@
 {% if request.query_params.get("newcode") %}
 <div class="alert success">🔑 رمز دخول جديد: <b>{{ request.query_params.get("newcode") }}</b></div>
 {% endif %}
+{% if request.query_params.get("err") == "nofile" %}
+<div class="alert error">⚠️ الرجاء اختيار ملف للرفع</div>
+{% endif %}
+{% if request.query_params.get("err") == "toolarge" %}
+<div class="alert error">⚠️ الملف كبير جداً (الحد الأقصى: 10 ميجابايت)</div>
+{% endif %}
+{% if request.query_params.get("err") == "noextract" %}
+<div class="alert error">⚠️ فشل استخراج التخصص والمواد من البرنامج</div>
+{% endif %}
+{% if request.query_params.get("err", "").startswith("parse:") %}
+<div class="alert error">⚠️ فشل تحليل الملف: {{ request.query_params.get("err", "")[6:] }}</div>
+{% endif %}
+
+<!-- رفع برنامج التخصص — لتوليد الدليل (3 مراحل) -->
+<div class="section">
+    <h2 class="section-title">📤 توليد الدليل من ملف البرنامج</h2>
+    <form method="POST" action="/generate/upload-file" enctype="multipart/form-data" class="gen-form">
+        <div class="upload-area">
+            <div class="upload-icon">📄⬆️</div>
+            <div class="upload-title">رافع برنامج التخصص</div>
+            <div class="upload-desc">سيتم استخراج التخصص والمواد تلقائياً من البرنامج</div>
+            <div class="upload-formats">صيغ مدعومة: PDF، DOCX، TXT (الحد الأقصى: 10 ميجابايت)</div>
+            <input type="file" name="file" accept=".pdf,.docx,.txt" style="display:none" id="file-input">
+            <button type="button" class="btn btn-accent" style="margin-top:16px" onclick="document.getElementById('file-input').click()">
+                📂 اختيار ملف
+            </button>
+            <p id="file-name" style="margin-top:8px; color:var(--muted); font-size:14px"></p>
+        </div>
+        <input type="submit" value="استخراج التخصص والمواد" style="display:none" id="submit-btn">
+    </form>
+</div>
 
 <!-- نموذج التوليد -->
 <div class="section">
