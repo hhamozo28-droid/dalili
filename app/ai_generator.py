@@ -13,9 +13,12 @@ from typing import Tuple
 def _try_gemini(spec: str, subject: str, kind: str):
     """محاولة استخدام Gemini API الخارجي"""
     try:
-        from .ai_api import generate_with_gemini, is_available
+        from .ai_api import generate_guide_full, generate_lesson_simple, is_available
         if is_available():
-            return generate_with_gemini(spec, subject, kind)
+            if kind == "guide":
+                return generate_guide_full(spec, subject)
+            else:
+                return generate_lesson_simple(spec, subject)
     except Exception:
         pass
     return None

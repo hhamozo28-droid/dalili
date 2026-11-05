@@ -17,7 +17,7 @@
     </header>
     <div class="content-body">
         {% if guide.content %}
-        <div class="prose">{{ guide.content|safe }}</div>
+        <div class="guide-full">{{ guide.content|safe }}</div>
         {% else %}
         <p class="muted">محتوى الدليل غير متوفر.</p>
         {% endif %}
