@@ -30,8 +30,11 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 
 @app.on_event("startup")
 def startup():
-    init_db()
-    _seed_passcodes()
+    try:
+        init_db()
+        _seed_passcodes()
+    except Exception as e:
+        print(f"⚠️ Database warning: {e}")
 
 
 def _seed_passcodes():
