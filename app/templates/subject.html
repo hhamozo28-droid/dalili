@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ subject.name }}{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">الرئيسية</a>
+    <span class="sep">/</span>
+    <a href="/specialization/{{ spec.slug }}">{{ spec.name }}</a>
+    <span class="sep">/</span>
+    <span>{{ subject.name }}</span>
+</div>
+
+<div class="page-head">
+    <div class="page-icon">{{ subject.icon }}</div>
+    <div>
+        <h1 class="page-title">{{ subject.name }}</h1>
+        <p class="page-desc">{{ subject.description }}</p>
+    </div>
+</div>
+
+<!-- قسم الأدلة -->
+{% if guides %}
+<div class="section">
+    <h2 class="section-title">📚 أدلة المتربص</h2>
+    <div class="list">
+        {% for guide in guides %}
+        <a href="/guide/{{ guide.id }}" class="list-item">
+            <span class="list-icon">📘</span>
+            <div class="list-body">
+                <h3 class="list-title">{{ guide.title }}</h3>
+            </div>
+            <span class="list-arrow">→</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- قسم الدروس -->
+{% if lessons %}
+<div class="section">
+    <h2 class="section-title">🎥 دروس التكوين المهني</h2>
+    <div class="list">
+        {% for lesson in lessons %}
+        <a href="/lesson/{{ lesson.id }}" class="list-item">
+            <span class="list-icon">▶️</span>
+            <div class="list-body">
+                <h3 class="list-title">{{ lesson.title }}</h3>
+            </div>
+            <span class="list-arrow">→</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if not guides and not lessons %}
+<div class="empty">لا يوجد محتوى لهذه المادة حالياً.</div>
+{% endif %}
+{% endblock %}

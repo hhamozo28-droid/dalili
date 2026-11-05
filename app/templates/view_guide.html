@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ guide.title }}{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/dashboard">اللوحة</a>
+    <span class="sep">/</span>
+    <a href="/dashboard">مجلد الدليلي</a>
+    <span class="sep">/</span>
+    <span>{{ guide.title }}</span>
+</div>
+
+<article class="content">
+    <header class="content-head">
+        <span class="content-tag">📘 دليل المتربص</span>
+        <h1 class="content-title">{{ guide.title }}</h1>
+        <p class="card-meta">{{ guide.subject.name }} · {{ guide.subject.specialization.name }}</p>
+    </header>
+    <div class="content-body">
+        {% if guide.content %}
+        <div class="prose">{{ guide.content|safe }}</div>
+        {% else %}
+        <p class="muted">محتوى الدليل غير متوفر.</p>
+        {% endif %}
+    </div>
+</article>
+
+<div style="margin-top: 20px">
+    <a href="/dashboard" class="btn btn-ghost">← العودة لللوحة</a>
+</div>
+{% endblock %}

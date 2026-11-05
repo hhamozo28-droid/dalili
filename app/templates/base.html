@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}dalili{% endblock %} — التكوين المهني</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    {% if request.session.get("logged_in") %}
+    <header class="header">
+        <div class="container header-inner">
+            <a href="/dashboard" class="logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">dalili</span>
+            </a>
+            <nav class="nav">
+                <a href="/dashboard" class="nav-link {% if active == 'dashboard' %}active{% endif %}">اللوحة</a>
+                <a href="/passcodes" class="nav-link {% if active == 'passcodes' %}active{% endif %}">رموز الدخول</a>
+                <a href="/logout" class="nav-link logout-link">خروج</a>
+            </nav>
+            <button class="menu-toggle" aria-label="القائمة">☰</button>
+        </div>
+    </header>
+    {% endif %}
+
+    <main class="container main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% if request.session.get("logged_in") %}
+    <footer class="footer">
+        <div class="container">
+            <p>dalili © 2026 — تطبيق للأساتذة — التكوين المهني</p>
+        </div>
+    </footer>
+    {% endif %}
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

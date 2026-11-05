@@ -1,0 +1,46 @@
+# ===== Secrets / كلمات المرور =====
+.env
+.env.local
+*.key
+*.pem
+
+# ===== قاعدة البيانات =====
+data/*.db
+data/*.db-journal
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# ===== البيئات virtual =====
+.venv/
+venv/
+env/
+ENV/
+
+# ===== أدوات =====
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ===== أنظمة =====
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# ===== Logs =====
+*.log
+logs/

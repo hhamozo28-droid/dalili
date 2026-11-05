@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ spec.name }}{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">الرئيسية</a>
+    <span class="sep">/</span>
+    <span>{{ spec.name }}</span>
+</div>
+
+<div class="page-head">
+    <div class="page-icon">{{ spec.icon }}</div>
+    <div>
+        <h1 class="page-title">{{ spec.name }}</h1>
+        <p class="page-desc">{{ spec.description }}</p>
+    </div>
+</div>
+
+<div class="section">
+    <h2 class="section-title">المواد</h2>
+    <div class="grid">
+        {% for subject in subjects %}
+        <a href="/subject/{{ subject.slug }}" class="card">
+            <div class="card-icon">{{ subject.icon }}</div>
+            <div class="card-body">
+                <h3 class="card-title">{{ subject.name }}</h3>
+                <p class="card-desc">{{ subject.description }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

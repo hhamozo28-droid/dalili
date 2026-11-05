@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }}{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/dashboard">اللوحة</a>
+    <span class="sep">/</span>
+    <a href="/dashboard">مجلد دروسي</a>
+    <span class="sep">/</span>
+    <span>{{ lesson.title }}</span>
+</div>
+
+<article class="content">
+    <header class="content-head">
+        <span class="content-tag">▶️ درس التكوين المهني</span>
+        <h1 class="content-title">{{ lesson.title }}</h1>
+        <p class="card-meta">{{ lesson.subject.name }} · {{ lesson.subject.specialization.name }}</p>
+    </header>
+    <div class="content-body">
+        {% if lesson.content %}
+        <div class="prose">{{ lesson.content|safe }}</div>
+        {% else %}
+        <p class="muted">محتوى الدرس غير متوفر.</p>
+        {% endif %}
+    </div>
+</article>
+
+<div style="margin-top: 20px">
+    <a href="/dashboard" class="btn btn-ghost">← العودة لللوحة</a>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}رموز الدخول{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/dashboard">اللوحة</a>
+    <span class="sep">/</span>
+    <span>رموز الدخول</span>
+</div>
+
+<div class="dashboard-head">
+    <h1 class="page-title">🔑 رموز الدخول</h1>
+    <p class="page-desc">كل رمز يُستخدم مرة واحدة فقط</p>
+</div>
+
+<div class="section">
+    <form method="POST" action="/passcode/new" style="display:inline">
+        <button type="submit" class="btn btn-accent">+ إنشاء رمز دخول جديد</button>
+    </form>
+</div>
+
+<div class="section">
+    {% if codes %}
+    <div class="list">
+        {% for pc in codes %}
+        <div class="list-item static">
+            <span class="list-icon">🔑</span>
+            <div class="list-body">
+                <h3 class="list-title code-display">{{ pc.code }}</h3>
+                <p class="card-meta">تم إنشاؤه: {{ pc.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+            <span class="badge unused"> unused</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">لا توجد رموز دخول متاحة حالياً. أنشئ رمزاً جديداً.</div>
+    {% endif %}
+</div>
+
+<a href="/dashboard" class="btn btn-ghost">← العودة لللوحة</a>
+{% endblock %}
