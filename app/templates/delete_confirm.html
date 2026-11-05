@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}تأكيد الحذف{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/dashboard">اللوحة</a>
+    <span class="sep">/</span>
+    <span>تأكيد الحذف</span>
+</div>
+
+<div class="error-page" style="padding: 60px 20px">
+    <div class="error-icon" style="color: #dc2626">🗑️</div>
+    <h1 style="font-size: 28px">تأكيد الحذف</h1>
+    <p class="muted" style="margin: 12px 0 20px">
+        هل أنت متأكد من حذف {{ label }} «<b>{{ item.title }}</b>»؟
+    </p>
+    <p class="muted" style="margin-bottom: 24px">هذا الإجراء لا يمكن التراجع عنه.</p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
+        <form method="POST" action="/delete/{{ kind }}/{{ item.id }}" style="display:inline">
+            <button type="submit" class="btn btn-danger">نعم، حذف</button>
+        </form>
+        {% if kind == "guide" %}
+        <a href="/view/guide/{{ item.id }}" class="btn btn-ghost">إلغاء</a>
+        {% else %}
+        <a href="/view/lesson/{{ item.id }}" class="btn btn-ghost">إلغاء</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

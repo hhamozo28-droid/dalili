@@ -215,3 +215,102 @@ def view_lesson(request: Request, id: int, db: Session = Depends(get_db)):
 def api_specializations(db: Session = Depends(get_db)):
     specs = db.query(Specialization).order_by(Specialization.order).all()
     return [{"id": s.id, "name": s.name, "slug": s.slug, "description": s.description} for s in specs]
+
+
+# ===== تعديل المحتوى =====
+
+@app.get("/edit/guide/{id}", response_class="HTML")
+def edit_guide_form(request: Request, id: int, db: Session = Depends(get_db)):
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+    guide = db.query(Guide).filter(Guide.id == id).first()
+    if not guide:
+        return templates.TemplateResponse(request, "error.html", {"message": "الدليل غير موجود"}, status_code=404)
+    return templates.TemplateResponse(request, "edit_content.html", {
+        "db": db, "kind": "guide", "item": guide,
+        "subject": guide.subject, "spec": guide.subject.specialization, "active": "dashboard",
+    })
+
+
+@app.post("/edit/guide/{id}", response_class="HTML")
+def edit_guide(request: Request, id: int, db: Session = Depends(get_db),
+               title: str = Form(...), content: str = Form("")):
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+    guide = db.query(Guide).filter(Guide.id == id).first()
+    if not guide:
+        return templates.TemplateResponse(request, "error.html", {"message": "الدليل غير موجود"}, status_code=404)
+    guide.title = title.strip() if title.strip() else guide.title
+    guide.content = content
+    db.commit()
+    return RedirectResponse("/view/guide/" + str(id), status_code=302)
+
+
+@app.get("/edit/lesson/{id}", response_class="HTML")
+def edit_lesson_form(request: Request, id: int, db: Session = Depends(get_db)):
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+    lesson = db.query(Lesson).filter(Lesson.id == id).first()
+    if not lesson:
+        return templates.TemplateResponse(request, "error.html", {"message": "الدرس غير موجود"}, status_code=404)
+    return templates.TemplateResponse(request, "edit_content.html", {
+        "db": db, "kind": "lesson", "item": lesson,
+        "subject": lesson.subject, "spec": lesson.subject.specialization, "active": "dashboard",
+    })
+
+
+@app.post("/edit/lesson/{id}", response_class="HTML")
+def edit_lesson(request: Request, id: int, db: Session = Depends(get_db),
+                title: str = Form(...), content: str = Form("")):
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+    lesson = db.query(Lesson).filter(Lesson.id == id).first()
+    if not lesson:
+        return templates.TemplateResponse(request, "error.html", {"message": "الدرس غير موجود"}, status_code=404)
+    lesson.title = title.strip() if title.strip() else lesson.title
+    lesson.content = content
+    db.commit()
+    return RedirectResponse("/view/lesson/" + str(id), status_code=302)
+
+
+# ===== حذف المحتوى =====
+
+@app.post("/delete/guide/{id}")
+def delete_guide(request: Request, id: int, db: Session = Depends(get_db)):
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+    guide = db.query(Guide).filter(Guide.id == id).first()
+    if guide:
+        db.delete(guide)
+        db.commit()
+    return RedirectResponse("/dashboard", status_code=302)
+
+
+@app.post("/delete/lesson/{id}")
+def delete_lesson(request: Request, id: int, db: Session = Depends(get_db)):
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+    lesson = db.query(Lesson).filter(Lesson.id == id).first()
+    if lesson:
+        db.delete(lesson)
+        db.commit()
+    return RedirectResponse("/dashboard", status_code=302)
+
+
+# ===== صفحة حذف =====
+
+@app.get("/delete/{kind}/{id}", response_class="HTML")
+def delete_confirm(request: Request, kind: str, id: int, db: Session = Depends(get_db)):
+    if not is_logged_in(request):
+        return RedirectResponse("/login", status_code=302)
+    if kind == "guide":
+        item = db.query(Guide).filter(Guide.id == id).first()
+        label = "الدليل"
+    else:
+        item = db.query(Lesson).filter(Lesson.id == id).first()
+        label = "الدرس"
+    if not item:
+        return templates.TemplateResponse(request, "error.html", {"message": f"{label} غير موجود"}, status_code=404)
+    return templates.TemplateResponse(request, "delete_confirm.html", {
+        "db": db, "kind": kind, "item": item, "label": label, "active": "dashboard",
+    })

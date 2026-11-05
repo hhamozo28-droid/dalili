@@ -6,6 +6,31 @@
     <p class="page-desc">أنشئ أدلة ودروس التكوين المهني — الذكاء الاصطناعي يولد المحتوى</p>
 </div>
 
+<!-- شريط الإحصائيات -->
+<div class="stats-bar">
+    <div class="stat-card">
+        <div class="stat-icon">📘</div>
+        <div class="stat-body">
+            <div class="stat-number">{{ guides|length }}</div>
+            <div class="stat-label">دليل</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🎥</div>
+        <div class="stat-body">
+            <div class="stat-number">{{ lessons|length }}</div>
+            <div class="stat-label">درس</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div class="stat-body">
+            <div class="stat-number">{{ guides|length + lessons|length }}</div>
+            <div class="stat-label">إجمالي المحتوى</div>
+        </div>
+    </div>
+</div>
+
 <!-- رسائل نجاح/خطأ -->
 {% if request.query_params.get("ok") == "generated" %}
 <div class="alert success">✅ تم توليد {% if request.query_params.get("type") == "guide" %}دليل{% else %}درس{% endif %} جديد: «{{ request.query_params.get("title") }}»</div>
@@ -48,14 +73,20 @@
     {% if guides %}
     <div class="content-grid">
         {% for guide in guides %}
-        <a href="/view/guide/{{ guide.id }}" class="card content-card">
-            <div class="card-icon">📘</div>
-            <div class="card-body">
-                <h3 class="card-title">{{ guide.title }}</h3>
-                <p class="card-meta">{{ guide.subject.name }} · {{ guide.subject.specialization.name }}</p>
+        <div class="card content-card-wrap">
+            <a href="/view/guide/{{ guide.id }}" class="card content-card">
+                <div class="card-icon">📘</div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ guide.title }}</h3>
+                    <p class="card-meta">{{ guide.subject.name }} · {{ guide.subject.specialization.name }}</p>
+                </div>
+                <span class="list-arrow">→</span>
+            </a>
+            <div class="card-actions">
+                <a href="/edit/guide/{{ guide.id }}" class="btn btn-small btn-ghost">✎ تعديل</a>
+                <a href="/delete/guide/{{ guide.id }}" class="btn btn-small btn-danger-ghost">🗑 حذف</a>
             </div>
-            <span class="list-arrow">→</span>
-        </a>
+        </div>
         {% endfor %}
     </div>
     {% else %}
@@ -69,14 +100,20 @@
     {% if lessons %}
     <div class="content-grid">
         {% for lesson in lessons %}
-        <a href="/view/lesson/{{ lesson.id }}" class="card content-card">
-            <div class="card-icon">🎥</div>
-            <div class="card-body">
-                <h3 class="card-title">{{ lesson.title }}</h3>
-                <p class="card-meta">{{ lesson.subject.name }} · {{ lesson.subject.specialization.name }}</p>
+        <div class="card content-card-wrap">
+            <a href="/view/lesson/{{ lesson.id }}" class="card content-card">
+                <div class="card-icon">🎥</div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ lesson.title }}</h3>
+                    <p class="card-meta">{{ lesson.subject.name }} · {{ lesson.subject.specialization.name }}</p>
+                </div>
+                <span class="list-arrow">→</span>
+            </a>
+            <div class="card-actions">
+                <a href="/edit/lesson/{{ lesson.id }}" class="btn btn-small btn-ghost">✎ تعديل</a>
+                <a href="/delete/lesson/{{ lesson.id }}" class="btn btn-small btn-danger-ghost">🗑 حذف</a>
             </div>
-            <span class="list-arrow">→</span>
-        </a>
+        </div>
         {% endfor %}
     </div>
     {% else %}

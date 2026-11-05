@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}تعديل {% if kind == "guide" %}الدليل{% else %}الدرس{% endif %}{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+    <a href="/dashboard">اللوحة</a>
+    <span class="sep">/</span>
+    {% if kind == "guide" %}
+    <a href="/view/guide/{{ item.id }}">{{ item.title }}</a>
+    {% else %}
+    <a href="/view/lesson/{{ item.id }}">{{ item.title }}</a>
+    {% endif %}
+    <span class="sep">/</span>
+    <span>تعديل</span>
+</div>
+
+<div class="dashboard-head">
+    <h1 class="page-title">✎️ تعديل {% if kind == "guide" %}الدليل{% else %}الدرس{% endif %}</h1>
+    <p class="page-desc">{{ item.title }}</p>
+</div>
+
+<form method="POST" action="/edit/{{ kind }}/{{ item.id }}" class="form-card">
+    <div class="field">
+        <label>العنوان</label>
+        <input type="text" name="title" value="{{ item.title }}" required>
+    </div>
+    <div class="field">
+        <label>المحتوى (HTML)</label>
+        <textarea name="content" rows="18" class="content-textarea">{{ item.content }}</textarea>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button type="submit" class="btn">حفظ التعديلات</button>
+        {% if kind == "guide" %}
+        <a href="/view/guide/{{ item.id }}" class="btn btn-ghost">取消</a>
+        <a href="/delete/guide/{{ item.id }}" class="btn btn-danger">🗑 حذف</a>
+        {% else %}
+        <a href="/view/lesson/{{ item.id }}" class="btn btn-ghost">取消</a>
+        <a href="/delete/lesson/{{ item.id }}" class="btn btn-danger">🗑 حذف</a>
+        {% endif %}
+    </div>
+</form>
+{% endblock %}

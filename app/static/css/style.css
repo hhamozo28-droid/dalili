@@ -420,10 +420,107 @@ body {
 /* ===== تصحيح الرؤوس ===== */
 .logout-link { color: var(--muted); }
 
+/* ===== أزرار الخطر ===== */
+.btn-danger { background: #dc2626; }
+.btn-danger:hover { background: #b91c1c; }
+.btn-danger-ghost {
+    background: transparent;
+    color: #dc2626;
+    border: 2px solid #fecaca;
+}
+.btn-danger-ghost:hover { background: #fef2f2; }
+
+/* ===== بطاقات المحتوى مع أزرار ===== */
+.content-card-wrap {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 8px;
+    box-shadow: var(--shadow);
+    transition: box-shadow .2s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.content-card-wrap:hover { box-shadow: var(--shadow-hover); }
+.content-card {
+    background: transparent;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: none;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all .2s;
+}
+.content-card-wrap .card-icon {
+    font-size: 30px;
+    width: 50px; height: 50px;
+    display: flex; align-items: center; justify-content: center;
+    background: #eff6ff;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+.card-actions {
+    display: flex;
+    gap: 6px;
+    padding: 0 8px 4px;
+}
+.card-actions .btn { flex: 1; text-align: center; }
+
+/* ===== محرر المحتوى ===== */
+.content-textarea {
+    width: 100%;
+    min-height: 400px;
+    padding: 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    resize: vertical;
+    color: var(--text);
+    background: #fafafa;
+}
+.content-textarea:focus { outline: none; border-color: var(--primary-light); }
+
+/* ===== شريط الإحصائيات ===== */
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 30px;
+}
+.stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+    transition: transform .2s;
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-icon {
+    font-size: 32px;
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 14px;
+    background: #eff6ff;
+}
+.stat-card:nth-child(2) .stat-icon { background: #fef3c7; }
+.stat-card:nth-child(3) .stat-icon { background: #dcfce7; }
+.stat-number { font-size: 28px; font-weight: 800; color: var(--primary); }
+.stat-label { font-size: 14px; color: var(--muted); }
+
 /* ===== Tablet ===== */
 @media (max-width: 768px) {
     .gen-row { grid-template-columns: 1fr; }
     .login-card { padding: 36px 24px; }
+    .stats-bar { grid-template-columns: 1fr; }
+    .stat-card { justify-content: flex-start; }
 }
 
 /* ===== Tablet ===== */
