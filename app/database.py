@@ -22,3 +22,19 @@ else:
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+
+def run_migrations():
+    """إضافة columns جديدة للجداول الموجودة"""
+    from sqlalchemy import inspect, text
+    inspector = inspect(engine)
+
+    # إضافة is_master لجدول passcodes
+    try:
+        cols = [c["name"] for c in inspector.get_columns("passcodes")]
+        if "is_master" not in cols:
+            with engine.connect() as conn:
+                conn.execute(text("ALTER TABLE passcodes ADD COLUMN is_master BOOLEAN DEFAULT FALSE"))
+                conn.commit()
+    except Exception:
+        pass

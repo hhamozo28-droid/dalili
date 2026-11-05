@@ -16,7 +16,9 @@
             </a>
             <nav class="nav">
                 <a href="/dashboard" class="nav-link {% if active == 'dashboard' %}active{% endif %}">اللوحة</a>
+                {% if request.session.get("is_master") %}
                 <a href="/passcodes" class="nav-link {% if active == 'passcodes' %}active{% endif %}">رموز الدخول</a>
+                {% endif %}
                 <a href="/logout" class="nav-link logout-link">خروج</a>
             </nav>
             <button class="menu-toggle" aria-label="القائمة">☰</button>

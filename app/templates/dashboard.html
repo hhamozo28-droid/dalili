@@ -38,6 +38,9 @@
 {% if request.query_params.get("err") == "missing" %}
 <div class="alert error">⚠️ الرجاء إدخال التخصص والمادة</div>
 {% endif %}
+{% if request.query_params.get("err") == "notmaster" %}
+<div class="alert error">⚠️ فقط الحساب الرئيسي (صاحب الرمز الدائم) يمكنه توليد رموز الدخول</div>
+{% endif %}
 {% if request.query_params.get("newcode") %}
 <div class="alert success">🔑 رمز دخول جديد: <b>{{ request.query_params.get("newcode") }}</b></div>
 {% endif %}
@@ -122,14 +125,23 @@
 </div>
 
 <!-- رموز الدخول -->
+{% if request.session.get("is_master") %}
 <div class="section">
     <div class="passcode-box">
         <h3>🔑 رموز الدخول</h3>
-        <p class="muted">أنشئ رموز دخول جديدة للأساتذة الآخرين. كل رمز يُستخدم مرة واحدة.</p>
+        <p class="muted">أنت الحساب الرئيسي — يمكنك توليد رموز دخول للأساتذة الآخرين. كل رمز يُستخدم مرة واحدة.</p>
         <form method="POST" action="/passcode/new" style="display:inline">
             <button type="submit" class="btn btn-ghost">+ إنشاء رمز دخول</button>
         </form>
         <a href="/passcodes" class="btn btn-small btn-ghost">عرض الرموز</a>
     </div>
 </div>
+{% else %}
+<div class="section">
+    <div class="passcode-box" style="opacity:.7">
+        <h3>🔑 رموز الدخول</h3>
+        <p class="muted">فقط الحساب الرئيسي (صاحب الرمز الدائم) يمكنه توليد رموز دخول جديدة للأساتذة الآخرين.</p>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

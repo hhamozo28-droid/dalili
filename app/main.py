@@ -17,7 +17,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
 import os
 
-from .database import SessionLocal
+from .database import SessionLocal, run_migrations
 from .models import Specialization, Subject, Guide, Lesson, Passcode, init_db, get_db
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -32,6 +32,7 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 def startup():
     try:
         init_db()
+        run_migrations()
         _seed_passcodes()
     except Exception as e:
         print(f"⚠️ Database warning: {e}")
@@ -40,17 +41,20 @@ def startup():
 def _seed_passcodes():
     """إنشاء رموز دخول أولية عند التشغيل"""
     db = SessionLocal()
-    if db.query(Passcode).count() == 0:
-        # إذا كان هناك INITIAL_PASSCODE مضبوط، استخدمه
-        initial = os.environ.get("INITIAL_PASSCODE", "")
-        if initial:
-            db.add(Passcode(code=initial.strip()))
-            print(f"🔑 رمز الدخول الأولي: {initial.strip()}")
-        else:
+    initial = os.environ.get("MASTER_PASSCODE", os.environ.get("INITIAL_PASSCODE", ""))
+    # التحقق من وجود الرمز الرئيسي
+    if initial:
+        master = db.query(Passcode).filter(Passcode.code == initial.strip(), Passcode.is_master == True).first()
+        if not master:
+            db.add(Passcode(code=initial.strip(), is_master=True))
+            db.commit()
+            print(f"👑 رمز الدخول الرئيسي (دائم): {initial.strip()}")
+    else:
+        if db.query(Passcode).count() == 0:
             for _ in range(3):
                 db.add(Passcode(code=secrets.token_urlsafe(6)))
-        db.commit()
-        print("🔑 رموز دخول أولية تم إنشاؤها — اطلبها من Vercel logs أو من صفحة /passcodes")
+            db.commit()
+            print("🔑 رموز دخول أولية تم إنشاؤها")
     db.close()
 
 
@@ -83,14 +87,28 @@ def login_form(request: Request):
 
 @app.post("/login", response_class="HTML")
 def login(request: Request, code: str = Form(...), db: Session = Depends(get_db)):
-    """تسجيل الدخول برمز دخول مرة واحدة"""
-    pc = db.query(Passcode).filter(Passcode.code == code.strip(), Passcode.used == False).first()
+    """تسجيل الدخول — الرمز الرئيسي دائم، الرموز العادية مرة واحدة"""
+    code = code.strip()
+
+    # التحقق من الرمز الرئيسي أولاً (دائم — لا يُستهلك)
+    master_code = os.environ.get("MASTER_PASSCODE", os.environ.get("INITIAL_PASSCODE", ""))
+    if code == master_code:
+        master = db.query(Passcode).filter(Passcode.code == master_code, Passcode.is_master == True).first()
+        if master:
+            request.session["logged_in"] = True
+            request.session["is_master"] = True
+            return RedirectResponse("/dashboard", status_code=302)
+
+    # الرمز العادي (مرة واحدة)
+    pc = db.query(Passcode).filter(Passcode.code == code, Passcode.used == False, Passcode.is_master == False).first()
     if pc:
         pc.used = True
         pc.used_at = datetime.utcnow()
         db.commit()
         request.session["logged_in"] = True
+        request.session["is_master"] = False
         return RedirectResponse("/dashboard", status_code=302)
+
     return templates.TemplateResponse(request, "login.html", {
         "active": "login", "error": "رمز الدخول غير صحيح أو تم استخدامه بالفعل"
     })
@@ -172,21 +190,25 @@ def generate(request: Request,
 
 @app.post("/passcode/new")
 def new_passcode(request: Request, db: Session = Depends(get_db)):
-    """إنشاء رمز دخول جديد (للأساتذة المسجلين)"""
+    """إنشاء رمز دخول جديد — فقط للرمز الرئيسي"""
     if not is_logged_in(request):
         return RedirectResponse("/login", status_code=302)
+    if not request.session.get("is_master"):
+        return RedirectResponse("/dashboard?err=notmaster", status_code=302)
     code = secrets.token_urlsafe(6)
-    db.add(Passcode(code=code))
+    db.add(Passcode(code=code, is_master=False))
     db.commit()
     return RedirectResponse("/dashboard?newcode=" + code, status_code=302)
 
 
 @app.get("/passcodes", response_class="HTML")
 def list_passcodes(request: Request, db: Session = Depends(get_db)):
-    """عرض رموز الدخول غير المستخدمة"""
+    """عرض رموز الدخول غير المستخدمة — فقط للرمز الرئيسي"""
     if not is_logged_in(request):
         return RedirectResponse("/login", status_code=302)
-    codes = db.query(Passcode).filter(Passcode.used == False).order_by(Passcode.created_at.desc()).all()
+    if not request.session.get("is_master"):
+        return RedirectResponse("/dashboard?err=notmaster", status_code=302)
+    codes = db.query(Passcode).filter(Passcode.used == False, Passcode.is_master == False).order_by(Passcode.created_at.desc()).all()
     return templates.TemplateResponse(request, "passcodes.html", {
         "db": db, "codes": codes, "active": "dashboard",
     })

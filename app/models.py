@@ -69,7 +69,7 @@ class Lesson(Base):
 
 
 class Passcode(Base):
-    """رمز دخول — يُستخدم مرة واحدة فقط"""
+    """رمز دخول — إما رئيسي (دائم) أو عادي (مرة واحدة)"""
     __tablename__ = "passcodes"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -77,6 +77,7 @@ class Passcode(Base):
     used = Column(Boolean, default=False)
     used_at = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
+    is_master = Column(Boolean, default=False)  # 👑 رمز رئيسي دائم
 
 
 def init_db():
