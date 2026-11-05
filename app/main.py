@@ -445,12 +445,12 @@ def generate_confirm_form(request: Request, ep_id: int, db: Session = Depends(ge
 
 
 @app.post("/generate/confirm/{ep_id}")
-def generate_confirm(request: Request, ep_id: int):
+async def generate_confirm(request: Request, ep_id: int):
     """المرحلة 1: تأكيد التخصص والتوجه لاختيار المادة"""
     if not is_logged_in(request):
         return RedirectResponse("/login", status_code=302)
 
-    form = request.form if hasattr(request, "form") else {}
+    form = await request.form()
     action = form.get("action", "confirm")
 
     if action == "confirm":
@@ -481,7 +481,7 @@ def generate_subject_form(request: Request, ep_id: int, db: Session = Depends(ge
 
 
 @app.post("/generate/subject/{ep_id}")
-def generate_subject(request: Request, ep_id: int, db: Session = Depends(get_db)):
+async def generate_subject(request: Request, ep_id: int, db: Session = Depends(get_db)):
     """المرحلة 2: توليد الدليل بناءً على المادة المختارة"""
     if not is_logged_in(request):
         return RedirectResponse("/login", status_code=302)
@@ -492,7 +492,8 @@ def generate_subject(request: Request, ep_id: int, db: Session = Depends(get_db)
 
     import json
     subjects = json.loads(ep.subjects_json)
-    subject_code = request.form.get("subject_code", "")
+    form = await request.form()
+    subject_code = form.get("subject_code", "")
     subject_name = ""
     for s in subjects:
         if s["code"] == subject_code:
