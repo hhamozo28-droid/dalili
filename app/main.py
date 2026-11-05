@@ -407,13 +407,14 @@ def _extract_with_regex(text: str) -> dict:
     import re
     subjects = []
 
-    # البحث عن مواد MQ و MC
-    for match in re.finditer(r'(MQ|MC)\s*[:\-–]\s*(.+)', text, re.IGNORECASE):
-        code = match.group(1).upper()
+    # البحث عن مواد MQ و MC (مع أو بدون أرقام: MQ1, MC2, MQ, MC)
+    for match in re.finditer(r'(MQ|MC)\d*\s*[:\-–]\s*(.+)', text, re.IGNORECASE):
+        full_code = match.group(0)[:match.group(0).find(":")] if ":" in match.group(0) else match.group(0)[:match.group(0).find("-")] if "-" in match.group(0) else match.group(1)
+        full_code = full_code.strip().upper()
         name = match.group(2).strip().split("\n")[0][:100]
         if name and len(name) > 2:
             subjects.append({
-                "code": f"{code}1",
+                "code": full_code,
                 "name": name,
                 "original_name": name,
             })
