@@ -17,6 +17,25 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // إظهار/إخفاء رمز الدخول
+    var toggleBtn = document.getElementById("togglePass");
+    var passInput = document.getElementById("passcode");
+    if (toggleBtn && passInput) {
+        toggleBtn.addEventListener("click", function () {
+            var eye = toggleBtn.querySelector(".icon-eye");
+            var eyeOff = toggleBtn.querySelector(".icon-eye-off");
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                eye.style.display = "none";
+                eyeOff.style.display = "block";
+            } else {
+                passInput.type = "password";
+                eye.style.display = "block";
+                eyeOff.style.display = "none";
+            }
+        });
+    }
+
     // عرض اسم الملف عند الرفع
     var fileInput = document.getElementById("file-input");
     var fileName = document.getElementById("file-name");

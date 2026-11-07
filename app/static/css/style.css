@@ -291,6 +291,33 @@ body {
 }
 .field textarea { resize: vertical; min-height: 80px; }
 
+/* ===== إظهار/إخفاء رمز الدخول ===== */
+.input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.input-wrap input {
+    padding-right: 48px !important;
+}
+.toggle-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    transition: color .2s;
+}
+.toggle-btn:hover { color: var(--primary); }
+.toggle-btn svg { display: block; }
+
 /* ===== أزرار خاصة ===== */
 .btn-accent { background: var(--accent); }
 .btn-accent:hover { background: #d97706; }
